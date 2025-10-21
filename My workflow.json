@@ -1,0 +1,153 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message",
+          "edited_message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -176,
+        -160
+      ],
+      "id": "2f6d8d46-f742-4fef-a419-a3f45f2af64f",
+      "name": "Telegram Trigger",
+      "webhookId": "b79a447c-f5ff-4dcd-ba0a-89e7b0258884",
+      "credentials": {
+        "telegramApi": {
+          "id": "IgF51SFqjVsZyeNV",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.content.parts[0].text }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        624,
+        -160
+      ],
+      "id": "83360140-54d4-445a-94df-5fc8c329030b",
+      "name": "Send a text message",
+      "webhookId": "9d4b2017-4385-4401-9fe5-776d145e898e",
+      "credentials": {
+        "telegramApi": {
+          "id": "IgF51SFqjVsZyeNV",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are the AI assistant for Niche Magazine Middle East by BeBrand company.\n\nUse your knowledge about Niche Magazine and BeBrand company to answer questions accurately and in detail.\n\nFOR GREETING MESSAGES (hi, hello, start, welcome):\n\"Hello! Welcome to Niche Magazine. I'm here to provide information about our luxury lifestyle publication and the premium content we offer. How can I assist you today?\"\n\nFOR UNCLEAR/AMBIGUOUS QUESTIONS (what do you know about them, tell me about it without context):\n\"I'd be happy to help! Could you please be more specific about what aspect of Niche Magazine or BeBrand company you'd like to know about? I can provide information about our publication, leadership, location, or services.\"\n\nFOR UNRELATED QUESTIONS (weather, sports, cooking, other companies):\n\"I focus exclusively on Niche Magazine and BeBrand company. Please ask about our luxury lifestyle publication or company information.\"\n\nFor all other clear questions, use your full knowledge to provide detailed, accurate information about Niche Magazine and BeBrand company.\n\nUser question: {{ $('Telegram Trigger').item.json.message.text }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        256,
+        -160
+      ],
+      "id": "b55d07cf-d37b-47a0-8984-256b73f7cef5",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "kMYqVoazlcTsUw56",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendChatAction",
+        "chatId": "={{ $json.message.chat.id }}"
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        32,
+        -160
+      ],
+      "id": "5ff050ef-8d0a-4539-9dec-29179391ea1d",
+      "name": "Send a chat action",
+      "webhookId": "10b8aa89-dc2f-43e2-b4b0-8a7478cd0a03",
+      "credentials": {
+        "telegramApi": {
+          "id": "IgF51SFqjVsZyeNV",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Send a chat action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a chat action": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "7d8c5985-2fef-4e33-a12a-cfce2a9a37eb",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2cdf54a89a7a8d8bf8b8b580cd8f3aa91414835da1e4ffe8613aa7ac401a7e70"
+  },
+  "id": "uT2vL1aArx0qc9gN",
+  "tags": []
+}
