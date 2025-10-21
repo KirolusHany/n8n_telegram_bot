@@ -1,5 +1,5 @@
 # Use the official n8n image
-FROM n8nio/n8n:latest
+FROM n8nio/n8n:1.67.0
 
 # Set environment variables
 ENV N8N_HOST=0.0.0.0
